@@ -183,9 +183,49 @@
       transition: transform 0.2s ease, box-shadow 0.25s ease;
     }
 
+    .btn-accent {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-accent::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.35) 50%, transparent 75%);
+      transform: translateX(-120%);
+      transition: transform 0.6s ease;
+    }
+
+    .btn-accent:hover::after {
+      transform: translateX(120%);
+    }
+
     .btn-accent:hover {
       transform: translateY(-2px);
       box-shadow: 0 12px 30px -6px var(--accent-glow);
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .float-slow {
+      animation: floatSlow 4.5s ease-in-out infinite;
+    }
+
+    #cursor-glow {
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 9999px;
+      pointer-events: none;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 65%);
+      opacity: 0.42;
+      transition: opacity 0.3s ease;
     }
 
     /* Custom Scrollbar */
@@ -211,6 +251,9 @@
 
   <!-- Subtle Radial Ambient Overlay -->
   <div class="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.08),transparent_55%),radial-gradient(ellipse_at_bottom_right,rgba(129,140,248,0.08),transparent_50%)]"></div>
+
+  <!-- Interactive Cursor Glow -->
+  <div id="cursor-glow" class="hidden md:block"></div>
 
   <!-- Top Navigation -->
   <header class="fixed top-0 inset-x-0 z-40 px-4 sm:px-6 pt-4 pointer-events-none">
@@ -260,7 +303,7 @@
     <section id="hero" class="min-h-screen flex flex-col justify-center pt-28 pb-16 px-4 sm:px-6 max-w-6xl mx-auto">
       <div class="grid lg:grid-cols-12 gap-8 items-center">
         <div class="lg:col-span-7 pointer-events-auto space-y-6">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass text-xs font-mono-code text-sky-300 border border-sky-400/30">
+          <div class="float-slow inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass text-xs font-mono-code text-sky-300 border border-sky-400/30">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span id="hero-badge">Available for 3D Web &amp; Product Design</span>
           </div>
@@ -315,26 +358,38 @@
 
             <!-- Geometry Switcher -->
             <div>
-              <label class="text-xs text-slate-400 block mb-2">3D Sculpture Geometry</label>
+              <label class="text-xs text-slate-400 block mb-2">3D Sculpture Geometry (6 Models)</label>
               <div class="grid grid-cols-3 gap-2">
-                <button type="button" data-shape="torus" class="shape-btn px-3 py-2 rounded-xl text-xs font-medium bg-sky-500/20 border border-sky-400 text-sky-200 transition">Torus Knot</button>
-                <button type="button" data-shape="icosa" class="shape-btn px-3 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white transition">Icosahedron</button>
-                <button type="button" data-shape="octa" class="shape-btn px-3 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white transition">Crystal Core</button>
+                <button type="button" data-shape="torus" class="shape-btn px-2.5 py-2 rounded-xl text-xs font-medium bg-sky-500/20 border border-sky-400 text-sky-200 transition">Torus Knot</button>
+                <button type="button" data-shape="icosa" class="shape-btn px-2.5 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white transition">Icosahedron</button>
+                <button type="button" data-shape="octa" class="shape-btn px-2.5 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white transition">Crystal Core</button>
+                <button type="button" data-shape="gyro" class="shape-btn px-2.5 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white transition">Gyro Rings</button>
+                <button type="button" data-shape="helix" class="shape-btn px-2.5 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white transition">DNA Helix</button>
+                <button type="button" data-shape="mobius" class="shape-btn px-2.5 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white transition">Star Knot</button>
               </div>
             </div>
 
             <!-- Theme / Lighting Palette -->
             <div>
-              <label class="text-xs text-slate-400 block mb-2">Studio Lighting &amp; Theme</label>
+              <label class="text-xs text-slate-400 block mb-2">Studio Lighting &amp; Theme (6 Colors)</label>
               <div class="grid grid-cols-3 gap-2">
-                <button type="button" data-palette="cyan" class="palette-btn px-3 py-2 rounded-xl text-xs font-medium bg-sky-500/20 border border-sky-400 text-sky-200 flex items-center justify-center gap-1.5 transition">
+                <button type="button" data-palette="cyan" class="palette-btn px-2.5 py-2 rounded-xl text-xs font-medium bg-sky-500/20 border border-sky-400 text-sky-200 flex items-center justify-center gap-1.5 transition">
                   <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span> Cyan
                 </button>
-                <button type="button" data-palette="violet" class="palette-btn px-3 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white flex items-center justify-center gap-1.5 transition">
+                <button type="button" data-palette="violet" class="palette-btn px-2.5 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white flex items-center justify-center gap-1.5 transition">
                   <span class="w-2.5 h-2.5 rounded-full bg-violet-400"></span> Violet
                 </button>
-                <button type="button" data-palette="amber" class="palette-btn px-3 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white flex items-center justify-center gap-1.5 transition">
+                <button type="button" data-palette="amber" class="palette-btn px-2.5 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white flex items-center justify-center gap-1.5 transition">
                   <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Amber
+                </button>
+                <button type="button" data-palette="emerald" class="palette-btn px-2.5 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white flex items-center justify-center gap-1.5 transition">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> Emerald
+                </button>
+                <button type="button" data-palette="crimson" class="palette-btn px-2.5 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white flex items-center justify-center gap-1.5 transition">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span> Crimson
+                </button>
+                <button type="button" data-palette="arctic" class="palette-btn px-2.5 py-2 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white flex items-center justify-center gap-1.5 transition">
+                  <span class="w-2.5 h-2.5 rounded-full bg-slate-200"></span> Arctic
                 </button>
               </div>
             </div>
@@ -357,6 +412,18 @@
                 <span id="speed-readout" class="font-mono-code text-sky-300">1.0x</span>
               </div>
               <input id="speed-slider" type="range" min="0.2" max="2.5" step="0.1" value="1.0" class="w-full accent-sky-400 cursor-pointer" />
+            </div>
+
+            <!-- Interactive FX Row -->
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button id="toggle-rings-btn" type="button" class="px-3 py-2 rounded-xl text-xs font-medium glass text-slate-200 hover:border-sky-400/60 transition flex items-center justify-center gap-1.5">
+                <i data-lucide="orbit" class="w-3.5 h-3.5 text-sky-400"></i>
+                <span>Holo Rings: <strong id="rings-state">On</strong></span>
+              </button>
+              <button id="trigger-warp-btn" type="button" class="px-3 py-2 rounded-xl text-xs font-semibold btn-accent flex items-center justify-center gap-1.5">
+                <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                <span>Pulse &amp; Warp</span>
+              </button>
             </div>
           </div>
         </div>
@@ -859,24 +926,82 @@
 
       let mainMesh = null;
       let wireMesh = null;
+      let wireframeEnabled = true;
 
       function buildGeometry(type) {
         if (mainMesh) sculptureGroup.remove(mainMesh);
         if (wireMesh) sculptureGroup.remove(wireMesh);
 
-        let geom;
-        if (type === 'icosa') {
-          geom = new THREE.IcosahedronGeometry(1.75, 1);
-        } else if (type === 'octa') {
-          geom = new THREE.OctahedronGeometry(1.85, 2);
+        if (type === 'gyro') {
+          mainMesh = new THREE.Group();
+          wireMesh = new THREE.Group();
+          const radii = [1.85, 1.38, 0.92];
+          const tilts = [
+            [0.3, 0.1, 0],
+            [1.1, 0.6, 0.4],
+            [-0.7, 1.2, 0.2]
+          ];
+          radii.forEach((r, idx) => {
+            const g = new THREE.TorusGeometry(r, 0.11, 20, 72);
+            const m = new THREE.Mesh(g, solidMat);
+            const w = new THREE.Mesh(g, wireMat);
+            m.rotation.set(...tilts[idx]);
+            w.rotation.set(...tilts[idx]);
+            w.scale.setScalar(1.02);
+            mainMesh.add(m);
+            wireMesh.add(w);
+          });
+          const coreG = new THREE.OctahedronGeometry(0.42, 0);
+          mainMesh.add(new THREE.Mesh(coreG, solidMat));
+          wireMesh.add(new THREE.Mesh(coreG, wireMat));
+        } else if (type === 'helix') {
+          mainMesh = new THREE.Group();
+          wireMesh = new THREE.Group();
+          const nodeGeom = new THREE.SphereGeometry(0.14, 14, 14);
+          const rungGeom = new THREE.CylinderGeometry(0.035, 0.035, 1.7, 8);
+          for (let i = -8; i <= 8; i++) {
+            const y = i * 0.24;
+            const a = i * 0.48;
+            const x = Math.cos(a) * 0.85;
+            const z = Math.sin(a) * 0.85;
+
+            const s1 = new THREE.Mesh(nodeGeom, solidMat);
+            s1.position.set(x, y, z);
+            const s2 = new THREE.Mesh(nodeGeom, solidMat);
+            s2.position.set(-x, y, -z);
+            const w1 = new THREE.Mesh(nodeGeom, wireMat);
+            w1.position.copy(s1.position);
+            w1.scale.setScalar(1.12);
+            const w2 = new THREE.Mesh(nodeGeom, wireMat);
+            w2.position.copy(s2.position);
+            w2.scale.setScalar(1.12);
+
+            const rung = new THREE.Mesh(rungGeom, wireMat);
+            rung.position.set(0, y, 0);
+            rung.rotation.z = Math.PI / 2;
+            rung.rotation.y = -a;
+
+            mainMesh.add(s1, s2);
+            wireMesh.add(w1, w2, rung);
+          }
         } else {
-          geom = new THREE.TorusKnotGeometry(1.25, 0.38, 128, 24);
+          let geom;
+          if (type === 'icosa') {
+            geom = new THREE.IcosahedronGeometry(1.75, 1);
+          } else if (type === 'octa') {
+            geom = new THREE.OctahedronGeometry(1.85, 2);
+          } else if (type === 'mobius') {
+            geom = new THREE.TorusKnotGeometry(1.15, 0.24, 150, 20, 3, 5);
+          } else {
+            geom = new THREE.TorusKnotGeometry(1.25, 0.38, 128, 24);
+          }
+
+          mainMesh = new THREE.Mesh(geom, solidMat);
+          wireMesh = new THREE.Mesh(geom, wireMat);
+          wireMesh.scale.setScalar(1.03);
         }
 
-        mainMesh = new THREE.Mesh(geom, solidMat);
-        wireMesh = new THREE.Mesh(geom, wireMat);
-        wireMesh.scale.setScalar(1.03);
-
+        wireMesh.visible = wireframeEnabled;
         sculptureGroup.add(mainMesh);
         sculptureGroup.add(wireMesh);
       }
@@ -970,9 +1095,12 @@
       });
 
       const PALETTES = {
-        cyan:   { c1: 0x38bdf8, c2: 0x818cf8, css1: '#38bdf8', css2: '#818cf8', glow: 'rgba(56,189,248,0.35)' },
-        violet: { c1: 0xa78bfa, c2: 0xf472b6, css1: '#a78bfa', css2: '#f472b6', glow: 'rgba(167,139,250,0.35)' },
-        amber:  { c1: 0xfbbf24, c2: 0xf97316, css1: '#fbbf24', css2: '#f97316', glow: 'rgba(251,191,36,0.35)' }
+        cyan:    { c1: 0x38bdf8, c2: 0x818cf8, css1: '#38bdf8', css2: '#818cf8', glow: 'rgba(56,189,248,0.35)' },
+        violet:  { c1: 0xa78bfa, c2: 0xf472b6, css1: '#a78bfa', css2: '#f472b6', glow: 'rgba(167,139,250,0.35)' },
+        amber:   { c1: 0xfbbf24, c2: 0xf97316, css1: '#fbbf24', css2: '#f97316', glow: 'rgba(251,191,36,0.35)' },
+        emerald: { c1: 0x34d399, c2: 0x2dd4bf, css1: '#34d399', css2: '#2dd4bf', glow: 'rgba(52,211,153,0.35)' },
+        crimson: { c1: 0xfb7185, c2: 0xf43f5e, css1: '#fb7185', css2: '#f43f5e', glow: 'rgba(251,113,133,0.35)' },
+        arctic:  { c1: 0xe2e8f0, c2: 0x94a3b8, css1: '#e2e8f0', css2: '#94a3b8', glow: 'rgba(226,232,240,0.30)' }
       };
 
       document.querySelectorAll('.palette-btn').forEach((btn) => {
@@ -996,8 +1124,9 @@
       });
 
       document.getElementById('toggle-wireframe-btn').addEventListener('click', () => {
-        wireMesh.visible = !wireMesh.visible;
-        document.getElementById('wireframe-state').textContent = wireMesh.visible ? 'On' : 'Off';
+        wireframeEnabled = !wireframeEnabled;
+        if (wireMesh) wireMesh.visible = wireframeEnabled;
+        document.getElementById('wireframe-state').textContent = wireframeEnabled ? 'On' : 'Off';
       });
 
       document.getElementById('toggle-spin-btn').addEventListener('click', () => {
@@ -1018,6 +1147,61 @@
         updateSculptureOffset();
       });
 
+      // Holo Orbital Rings
+      const holoRingsGroup = new THREE.Group();
+      sculptureGroup.add(holoRingsGroup);
+      const ringMat1 = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.42 });
+      const ringMat2 = new THREE.MeshBasicMaterial({ color: 0x818cf8, transparent: true, opacity: 0.32 });
+      const holoRing1 = new THREE.Mesh(new THREE.TorusGeometry(2.65, 0.018, 12, 96), ringMat1);
+      holoRing1.rotation.set(Math.PI / 2.6, 0.3, 0);
+      const holoRing2 = new THREE.Mesh(new THREE.TorusGeometry(2.95, 0.014, 12, 96), ringMat2);
+      holoRing2.rotation.set(-Math.PI / 3.2, -0.4, 0.2);
+      holoRingsGroup.add(holoRing1, holoRing2);
+
+      // Shockwave Energy Ring
+      const shockMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0 });
+      const shockRing = new THREE.Mesh(new THREE.RingGeometry(1.1, 1.28, 64), shockMat);
+      sculptureGroup.add(shockRing);
+
+      let warpBoost = 0;
+      let shockProgress = 0;
+      let baseScale = window.innerWidth >= 1024 ? 0.86 : 0.78;
+
+      function triggerWarpBurst() {
+        warpBoost = 1.0;
+        shockProgress = 0.01;
+        sculptureGroup.rotation.y += 0.65;
+      }
+
+      document.getElementById('toggle-rings-btn').addEventListener('click', () => {
+        holoRingsGroup.visible = !holoRingsGroup.visible;
+        document.getElementById('rings-state').textContent = holoRingsGroup.visible ? 'On' : 'Off';
+      });
+
+      document.getElementById('trigger-warp-btn').addEventListener('click', triggerWarpBurst);
+      canvas.addEventListener('dblclick', triggerWarpBurst);
+
+      // Sync ring colors on palette change
+      document.querySelectorAll('.palette-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const p = PALETTES[btn.dataset.palette];
+          if (p) {
+            ringMat1.color.setHex(p.c1);
+            ringMat2.color.setHex(p.c2);
+            shockMat.color.setHex(p.c1);
+          }
+        });
+      });
+
+      // Cursor Glow follower
+      const cursorGlow = document.getElementById('cursor-glow');
+      if (cursorGlow) {
+        window.addEventListener('pointermove', (e) => {
+          cursorGlow.style.left = e.clientX + 'px';
+          cursorGlow.style.top = e.clientY + 'px';
+        });
+      }
+
       // Animation Loop
       let clockTime = 0;
       let prevTime = performance.now();
@@ -1025,12 +1209,46 @@
         requestAnimationFrame(animate);
         const dt = Math.min((now - prevTime) / 1000, 0.05);
         prevTime = now;
-        clockTime += dt * speedMult;
+
+        const effectiveSpeed = speedMult + warpBoost * 3.8;
+        clockTime += dt * effectiveSpeed;
+
+        if (warpBoost > 0) {
+          warpBoost = Math.max(0, warpBoost - dt * 1.15);
+          const posAttr = particlesGeom.attributes.position;
+          for (let i = 2; i < posAttr.array.length; i += 3) {
+            posAttr.array[i] += dt * 18 * warpBoost;
+            if (posAttr.array[i] > 8) posAttr.array[i] = -8;
+          }
+          posAttr.needsUpdate = true;
+        }
+
+        if (shockProgress > 0) {
+          shockProgress += dt * 1.9;
+          if (shockProgress >= 1) {
+            shockProgress = 0;
+            shockMat.opacity = 0;
+            shockRing.scale.setScalar(1);
+          } else {
+            shockRing.scale.setScalar(1 + shockProgress * 3.2);
+            shockMat.opacity = (1 - shockProgress) * 0.75;
+          }
+        }
+
+        // Organic breathing glow & spring scale pop
+        baseScale = window.innerWidth >= 1024 ? 0.86 : 0.78;
+        const popScale = baseScale * (1 + Math.sin(warpBoost * Math.PI) * 0.14);
+        sculptureGroup.scale.setScalar(popScale);
+        solidMat.emissiveIntensity = 0.18 + Math.sin(clockTime * 2.2) * 0.08 + warpBoost * 0.35;
 
         if (autoSpin && !isDragging) {
-          sculptureGroup.rotation.y += dt * 0.45 * speedMult;
-          sculptureGroup.rotation.x += dt * 0.18 * speedMult;
+          sculptureGroup.rotation.y += dt * 0.45 * effectiveSpeed;
+          sculptureGroup.rotation.x += dt * 0.18 * effectiveSpeed;
         }
+
+        // Holo rings counter-rotation
+        holoRing1.rotation.z += dt * 0.35 * effectiveSpeed;
+        holoRing2.rotation.z -= dt * 0.28 * effectiveSpeed;
 
         // Scroll-linked depth
         const scrollRatio = Math.min(window.scrollY / (window.innerHeight * 1.4), 1);
