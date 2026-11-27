@@ -567,16 +567,47 @@
     </footer>
   </main>
 
-  <!-- PROJECT CASE STUDY MODAL -->
-  <div id="project-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-    <div class="glass-strong rounded-3xl max-w-2xl w-full overflow-hidden border border-slate-700/80 shadow-2xl transform transition-all">
-      <div class="relative h-56 sm:h-64 overflow-hidden bg-slate-900">
-        <img id="modal-img" src="" alt="Project Preview" class="w-full h-full object-cover" />
-        <button id="close-modal-btn" type="button" aria-label="Close Modal" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-950/80 text-white flex items-center justify-center hover:bg-slate-800 transition border border-slate-700">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-        <span id="modal-category" class="absolute bottom-4 left-4 text-xs font-mono-code px-3 py-1 rounded-full bg-slate-950/80 text-sky-300 border border-sky-400/30"></span>
+  <!-- PROJECT CASE STUDY MODAL (INTERACTIVE 3D VIEWPORT) -->
+  <div id="project-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+    <div class="glass-strong rounded-3xl max-w-3xl w-full max-h-[92vh] overflow-y-auto border border-slate-700/80 shadow-2xl transform transition-all">
+      <div class="relative h-64 sm:h-80 overflow-hidden bg-slate-950">
+        <canvas id="modal-3d-canvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+        <img id="modal-img" src="" alt="Project Preview" class="hidden w-full h-full object-cover" />
+
+        <!-- Top Controls -->
+        <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+          <div class="inline-flex rounded-xl bg-slate-950/85 p-1 border border-slate-700/80 pointer-events-auto">
+            <button id="modal-view-3d-btn" type="button" class="px-3 py-1 rounded-lg text-xs font-medium bg-sky-500/25 text-sky-200 border border-sky-400/50 transition">Live 3D</button>
+            <button id="modal-view-img-btn" type="button" class="px-3 py-1 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition">Studio Render</button>
+          </div>
+
+          <button id="close-modal-btn" type="button" aria-label="Close Modal" class="w-9 h-9 rounded-full bg-slate-950/85 text-white flex items-center justify-center hover:bg-slate-800 transition border border-slate-700 pointer-events-auto">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Bottom Viewport HUD -->
+        <div class="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+          <span id="modal-category" class="text-xs font-mono-code px-3 py-1 rounded-full bg-slate-950/85 text-sky-300 border border-sky-400/30"></span>
+          <span id="modal-3d-hint" class="text-[11px] font-mono-code px-2.5 py-1 rounded-full bg-slate-950/85 text-emerald-300 border border-emerald-500/30">Drag to Orbit &bull; Interactive WebGL</span>
+        </div>
       </div>
+
+      <!-- Interactive 3D Project Controls Bar -->
+      <div id="modal-3d-toolbar" class="px-6 py-3 bg-slate-900/70 border-y border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2 flex-1 min-w-[170px]">
+          <label for="modal-param-slider" id="modal-param-label" class="text-xs font-mono-code text-slate-300 whitespace-nowrap">Morph / Explode:</label>
+          <input id="modal-param-slider" type="range" min="0" max="100" value="35" class="w-full max-w-[150px] accent-sky-400 cursor-pointer" />
+          <span id="modal-param-val" class="text-xs font-mono-code text-sky-300 w-9">35%</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="modal-wire-btn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-medium glass text-slate-200 hover:border-sky-400/60 transition">Wireframe: Off</button>
+          <button id="modal-spin-btn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-medium glass text-slate-200 hover:border-sky-400/60 transition">Spin: On</button>
+          <button id="modal-pulse-btn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-sky-500/20 border border-sky-400/50 text-sky-200 hover:bg-sky-500/30 transition">Pulse 3D</button>
+          <button id="modal-reset-btn" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-medium glass text-slate-300 hover:text-white transition">Reset</button>
+        </div>
+      </div>
+
       <div class="p-6 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <h3 id="modal-title" class="font-display text-2xl font-bold text-white"></h3>
@@ -1121,13 +1152,22 @@
     })();
 
     // =========================================================================
-    // 6. PROJECTS GRID + 3D TILT CARDS + FILTER + MODAL
+    // 6. PROJECTS GRID + 3D TILT CARDS + FILTER + INTERACTIVE 3D MODAL ENGINE
     // =========================================================================
     const projectsGrid = document.getElementById('projects-grid');
+    let currentFilter = 'all';
+    let starredProjects = {};
+    try {
+      const savedStars = localStorage.getItem('portfolio_3d_stars_v1');
+      if (savedStars) starredProjects = JSON.parse(savedStars);
+    } catch (e) {}
 
     function renderProjects(filter = 'all') {
+      currentFilter = filter;
       const items = filter === 'all' ? PROJECTS : PROJECTS.filter((p) => p.category === filter);
-      projectsGrid.innerHTML = items.map((p) => `
+      projectsGrid.innerHTML = items.map((p) => {
+        const isStarred = !!starredProjects[p.id];
+        return `
         <div class="tilt-stage">
           <article data-project-id="${p.id}" class="tilt-card glass rounded-2xl overflow-hidden cursor-pointer flex flex-col h-full group">
             <div class="card-glare"></div>
@@ -1135,6 +1175,12 @@
               <img src="${p.image}" alt="${escapeHtml(p.title)}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
               <span class="tilt-depth-2 absolute top-3 left-3 text-[11px] font-mono-code px-2.5 py-1 rounded-full bg-slate-950/80 text-sky-300 border border-sky-400/30 backdrop-blur-md">
                 ${escapeHtml(p.categoryLabel)}
+              </span>
+              <button type="button" data-star-id="${p.id}" aria-label="Favorite Project" class="star-btn tilt-depth-2 absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-950/80 border ${isStarred ? 'border-amber-400/70 text-amber-300' : 'border-slate-700 text-slate-300 hover:text-white'} flex items-center justify-center backdrop-blur-md transition">
+                <i data-lucide="star" class="w-4 h-4 ${isStarred ? 'fill-amber-400 text-amber-400' : ''}"></i>
+              </button>
+              <span class="tilt-depth-2 absolute bottom-3 right-3 text-[11px] font-mono-code px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-200 border border-sky-400/40 backdrop-blur-md flex items-center gap-1">
+                <i data-lucide="box" class="w-3 h-3"></i> Live 3D
               </span>
             </div>
             <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
@@ -1150,19 +1196,32 @@
                   ${p.tags.slice(0, 2).map((t) => `<span class="text-[11px] px-2 py-0.5 rounded-md bg-slate-800/90 text-slate-300">${escapeHtml(t)}</span>`).join('')}
                 </div>
                 <span class="text-xs font-medium text-sky-400 inline-flex items-center gap-1">
-                  Inspect <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                  Launch 3D <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
                 </span>
               </div>
             </div>
           </article>
         </div>
-      `).join('');
+      `;}).join('');
 
       lucide.createIcons();
       attachTiltAndModalHandlers();
     }
 
     function attachTiltAndModalHandlers() {
+      document.querySelectorAll('.star-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.starId;
+          starredProjects[id] = !starredProjects[id];
+          try {
+            localStorage.setItem('portfolio_3d_stars_v1', JSON.stringify(starredProjects));
+          } catch (err) {}
+          renderProjects(currentFilter);
+          showToast(starredProjects[id] ? 'Project bookmarked' : 'Bookmark removed');
+        });
+      });
+
       document.querySelectorAll('.tilt-card').forEach((card) => {
         card.addEventListener('mousemove', (e) => {
           const rect = card.getBoundingClientRect();
@@ -1198,9 +1257,252 @@
       });
     });
 
+    // Interactive 3D Modal Engine
     const projectModal = document.getElementById('project-modal');
+    const modalCanvas = document.getElementById('modal-3d-canvas');
+    const modalImg = document.getElementById('modal-img');
+    const modalToolbar = document.getElementById('modal-3d-toolbar');
+    const modalParamSlider = document.getElementById('modal-param-slider');
+    const modalParamVal = document.getElementById('modal-param-val');
+    const modalParamLabel = document.getElementById('modal-param-label');
+
+    let modalRenderer = null;
+    let modalScene = null;
+    let modalCamera = null;
+    let modalGroup = null;
+    let modalAnimId = null;
+    let modalActiveProject = null;
+    let modalWireframe = false;
+    let modalSpin = true;
+    let modalParam = 0.35;
+    let modalPulse = 0;
+    let modalDragging = false;
+    let modalPrevX = 0;
+    let modalPrevY = 0;
+    let modalTerrainMesh = null;
+    let modalTerrainBaseZ = null;
+    let modalLayers = [];
+    let modalOrbitals = [];
+
+    function initModalThree() {
+      if (typeof THREE === 'undefined' || modalRenderer) return;
+      modalScene = new THREE.Scene();
+      modalCamera = new THREE.PerspectiveCamera(48, modalCanvas.clientWidth / (modalCanvas.clientHeight || 300), 0.1, 100);
+      modalCamera.position.set(0, 0.4, 5.2);
+
+      modalRenderer = new THREE.WebGLRenderer({ canvas: modalCanvas, antialias: true, alpha: true });
+      modalRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+      const amb = new THREE.AmbientLight(0xffffff, 0.7);
+      modalScene.add(amb);
+      const l1 = new THREE.PointLight(0x38bdf8, 2.5, 25);
+      l1.position.set(4, 4, 5);
+      modalScene.add(l1);
+      const l2 = new THREE.PointLight(0xa78bfa, 2.0, 25);
+      l2.position.set(-4, -3, 4);
+      modalScene.add(l2);
+
+      modalGroup = new THREE.Group();
+      modalScene.add(modalGroup);
+
+      modalCanvas.addEventListener('pointerdown', (e) => {
+        modalDragging = true;
+        modalPrevX = e.clientX;
+        modalPrevY = e.clientY;
+        modalCanvas.setPointerCapture(e.pointerId);
+      });
+      modalCanvas.addEventListener('pointermove', (e) => {
+        if (!modalDragging || !modalGroup) return;
+        modalGroup.rotation.y += (e.clientX - modalPrevX) * 0.01;
+        modalGroup.rotation.x += (e.clientY - modalPrevY) * 0.01;
+        modalPrevX = e.clientX;
+        modalPrevY = e.clientY;
+      });
+      modalCanvas.addEventListener('pointerup', () => {
+        modalDragging = false;
+      });
+      modalCanvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        modalCamera.position.z = Math.max(2.6, Math.min(8.5, modalCamera.position.z + e.deltaY * 0.004));
+      }, { passive: false });
+    }
+
+    function buildModalProjectScene(projectId) {
+      initModalThree();
+      if (!modalGroup) return;
+
+      while (modalGroup.children.length > 0) {
+        modalGroup.remove(modalGroup.children[0]);
+      }
+      modalTerrainMesh = null;
+      modalTerrainBaseZ = null;
+      modalLayers = [];
+      modalOrbitals = [];
+      modalGroup.rotation.set(0.25, 0.3, 0);
+      modalCamera.position.set(0, 0.4, 5.2);
+
+      if (projectId === 'iridescent-torus') {
+        modalParamLabel.textContent = 'Orbital Dispersion:';
+        const knotGeom = new THREE.TorusKnotGeometry(1.05, 0.32, 128, 24);
+        const knotMat = new THREE.MeshStandardMaterial({
+          color: 0x0ea5e9,
+          metalness: 0.85,
+          roughness: 0.15,
+          emissive: 0x6366f1,
+          emissiveIntensity: 0.3,
+          wireframe: modalWireframe
+        });
+        modalGroup.add(new THREE.Mesh(knotGeom, knotMat));
+
+        const sphGeom = new THREE.SphereGeometry(0.16, 20, 20);
+        const sphMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.95, roughness: 0.08 });
+        for (let i = 0; i < 10; i++) {
+          const s = new THREE.Mesh(sphGeom, sphMat);
+          s.userData = { angle: (i / 10) * Math.PI * 2, y: ((i % 3) - 1) * 0.55 };
+          modalGroup.add(s);
+          modalOrbitals.push(s);
+        }
+      } else if (projectId === 'liquid-chrome') {
+        modalParamLabel.textContent = 'Explode Layers:';
+        const colors = [0x38bdf8, 0x818cf8, 0xf472b6, 0x34d399];
+        for (let i = 0; i < 4; i++) {
+          const slabGeom = new THREE.BoxGeometry(2.3 - i * 0.25, 0.16, 1.6 - i * 0.15);
+          const slabMat = new THREE.MeshStandardMaterial({
+            color: colors[i],
+            metalness: 0.7,
+            roughness: 0.2,
+            transparent: true,
+            opacity: 0.78,
+            wireframe: modalWireframe
+          });
+          const slab = new THREE.Mesh(slabGeom, slabMat);
+          slab.userData = { index: i - 1.5 };
+          modalGroup.add(slab);
+          modalLayers.push(slab);
+        }
+      } else {
+        modalParamLabel.textContent = 'Wave Amplitude:';
+        const planeGeom = new THREE.PlaneGeometry(4.2, 4.2, 26, 26);
+        const planeMat = new THREE.MeshBasicMaterial({
+          color: 0x38bdf8,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.85
+        });
+        modalTerrainMesh = new THREE.Mesh(planeGeom, planeMat);
+        modalTerrainMesh.rotation.x = -Math.PI / 2.4;
+        const pos = planeGeom.attributes.position;
+        modalTerrainBaseZ = new Float32Array(pos.count);
+        for (let i = 0; i < pos.count; i++) {
+          modalTerrainBaseZ[i] = pos.getZ(i);
+        }
+        modalGroup.add(modalTerrainMesh);
+
+        const prismGeom = new THREE.OctahedronGeometry(0.24, 0);
+        const prismMat = new THREE.MeshStandardMaterial({
+          color: 0xf472b6,
+          emissive: 0x818cf8,
+          emissiveIntensity: 0.6,
+          metalness: 0.6,
+          roughness: 0.2,
+          wireframe: modalWireframe
+        });
+        for (let i = 0; i < 5; i++) {
+          const p = new THREE.Mesh(prismGeom, prismMat);
+          p.userData = { angle: (i / 5) * Math.PI * 2 };
+          modalGroup.add(p);
+          modalOrbitals.push(p);
+        }
+      }
+    }
+
+    function resizeModalCanvas() {
+      if (!modalRenderer || !modalCanvas) return;
+      const w = modalCanvas.clientWidth || 640;
+      const h = modalCanvas.clientHeight || 300;
+      modalCamera.aspect = w / h;
+      modalCamera.updateProjectionMatrix();
+      modalRenderer.setSize(w, h, false);
+    }
+
+    function startModalLoop() {
+      if (modalAnimId) cancelAnimationFrame(modalAnimId);
+      let t = 0;
+      let prev = performance.now();
+      function loop(now) {
+        if (projectModal.classList.contains('hidden')) return;
+        modalAnimId = requestAnimationFrame(loop);
+        const dt = Math.min((now - prev) / 1000, 0.05);
+        prev = now;
+        t += dt;
+
+        if (modalSpin && !modalDragging && modalGroup) {
+          modalGroup.rotation.y += dt * 0.55;
+        }
+        if (modalPulse > 0) {
+          modalPulse = Math.max(0, modalPulse - dt * 1.8);
+          const s = 1 + Math.sin(modalPulse * Math.PI) * 0.18;
+          modalGroup.scale.setScalar(s);
+        } else if (modalGroup) {
+          modalGroup.scale.setScalar(1);
+        }
+
+        // Project-specific live animations
+        if (modalActiveProject === 'iridescent-torus') {
+          const rad = 1.65 + modalParam * 1.4;
+          modalOrbitals.forEach((s) => {
+            const a = s.userData.angle + t * 0.9;
+            s.position.set(Math.cos(a) * rad, s.userData.y + Math.sin(t * 2 + a) * 0.2, Math.sin(a) * rad);
+          });
+        } else if (modalActiveProject === 'liquid-chrome') {
+          const gap = 0.24 + modalParam * 0.7;
+          modalLayers.forEach((slab) => {
+            slab.position.y = slab.userData.index * gap;
+            slab.rotation.y = Math.sin(t * 0.8 + slab.userData.index) * 0.12;
+          });
+        } else if (modalTerrainMesh) {
+          const pos = modalTerrainMesh.geometry.attributes.position;
+          const amp = 0.15 + modalParam * 0.75;
+          for (let i = 0; i < pos.count; i++) {
+            const x = pos.getX(i);
+            const y = pos.getY(i);
+            pos.setZ(i, Math.sin(x * 1.7 + t * 2.0) * Math.cos(y * 1.7 + t * 1.5) * amp);
+          }
+          pos.needsUpdate = true;
+          modalOrbitals.forEach((p) => {
+            const a = p.userData.angle + t * 0.7;
+            p.position.set(Math.cos(a) * 1.3, 0.75 + Math.sin(t * 2.2 + a) * 0.25, Math.sin(a) * 1.3);
+            p.rotation.y += dt * 1.5;
+          });
+        }
+
+        if (modalRenderer && modalScene && modalCamera) {
+          modalRenderer.render(modalScene, modalCamera);
+        }
+      }
+      modalAnimId = requestAnimationFrame(loop);
+    }
+
+    function setModalViewMode(mode) {
+      const is3D = mode === '3d';
+      modalCanvas.classList.toggle('hidden', !is3D);
+      modalImg.classList.toggle('hidden', is3D);
+      modalToolbar.classList.toggle('hidden', !is3D);
+      document.getElementById('modal-3d-hint').classList.toggle('hidden', !is3D);
+      document.getElementById('modal-view-3d-btn').className = is3D
+        ? 'px-3 py-1 rounded-lg text-xs font-medium bg-sky-500/25 text-sky-200 border border-sky-400/50 transition'
+        : 'px-3 py-1 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition';
+      document.getElementById('modal-view-img-btn').className = !is3D
+        ? 'px-3 py-1 rounded-lg text-xs font-medium bg-sky-500/25 text-sky-200 border border-sky-400/50 transition'
+        : 'px-3 py-1 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition';
+      if (is3D) {
+        resizeModalCanvas();
+      }
+    }
+
     function openProjectModal(p) {
-      document.getElementById('modal-img').src = p.image;
+      modalActiveProject = p.id;
+      modalImg.src = p.image;
       document.getElementById('modal-category').textContent = p.categoryLabel;
       document.getElementById('modal-title').textContent = p.title;
       document.getElementById('modal-year').textContent = p.year;
@@ -1212,17 +1514,58 @@
         .join('');
       projectModal.classList.remove('hidden');
       projectModal.classList.add('flex');
+      setModalViewMode('3d');
+      buildModalProjectScene(p.id);
+      resizeModalCanvas();
+      startModalLoop();
     }
 
-    document.getElementById('close-modal-btn').addEventListener('click', () => {
+    document.getElementById('modal-view-3d-btn').addEventListener('click', () => setModalViewMode('3d'));
+    document.getElementById('modal-view-img-btn').addEventListener('click', () => setModalViewMode('img'));
+
+    modalParamSlider.addEventListener('input', (e) => {
+      modalParam = parseInt(e.target.value, 10) / 100;
+      modalParamVal.textContent = e.target.value + '%';
+    });
+
+    document.getElementById('modal-wire-btn').addEventListener('click', (e) => {
+      modalWireframe = !modalWireframe;
+      e.target.textContent = `Wireframe: ${modalWireframe ? 'On' : 'Off'}`;
+      if (modalGroup) {
+        modalGroup.traverse((obj) => {
+          if (obj.isMesh && obj !== modalTerrainMesh && obj.material) {
+            obj.material.wireframe = modalWireframe;
+          }
+        });
+      }
+    });
+
+    document.getElementById('modal-spin-btn').addEventListener('click', (e) => {
+      modalSpin = !modalSpin;
+      e.target.textContent = `Spin: ${modalSpin ? 'On' : 'Off'}`;
+    });
+
+    document.getElementById('modal-pulse-btn').addEventListener('click', () => {
+      modalPulse = 1.0;
+    });
+
+    document.getElementById('modal-reset-btn').addEventListener('click', () => {
+      modalParam = 0.35;
+      modalParamSlider.value = '35';
+      modalParamVal.textContent = '35%';
+      if (modalGroup) modalGroup.rotation.set(0.25, 0.3, 0);
+      if (modalCamera) modalCamera.position.set(0, 0.4, 5.2);
+    });
+
+    function closeProjectModal() {
       projectModal.classList.add('hidden');
       projectModal.classList.remove('flex');
-    });
+      if (modalAnimId) cancelAnimationFrame(modalAnimId);
+    }
+
+    document.getElementById('close-modal-btn').addEventListener('click', closeProjectModal);
     projectModal.addEventListener('click', (e) => {
-      if (e.target === projectModal) {
-        projectModal.classList.add('hidden');
-        projectModal.classList.remove('flex');
-      }
+      if (e.target === projectModal) closeProjectModal();
     });
 
     renderProjects('all');
