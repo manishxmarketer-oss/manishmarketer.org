@@ -279,9 +279,9 @@
           <i data-lucide="log-in" class="w-4 h-4 text-sky-400"></i>
           <span id="nav-auth-label">Sign In</span>
         </button>
-        <button id="nav-admin-btn" type="button" class="hidden sm:inline-flex px-3 py-2 rounded-xl text-xs sm:text-sm font-medium glass text-amber-300 border border-amber-400/30 hover:border-amber-400/70 transition items-center gap-1.5">
+        <button id="nav-admin-btn" type="button" class="hidden px-3 py-2 rounded-xl text-xs sm:text-sm font-medium glass text-amber-300 border border-amber-400/30 hover:border-amber-400/70 transition items-center gap-1.5">
           <i data-lucide="shield-check" class="w-4 h-4"></i>
-          <span id="nav-admin-label">Admin</span>
+          <span id="nav-admin-label">Admin Panel</span>
         </button>
         <a href="#contact" class="hidden sm:inline-flex px-4 py-2 rounded-xl text-xs sm:text-sm btn-accent items-center gap-1.5">
           <span>Hire Me</span>
@@ -299,7 +299,6 @@
       <a href="#skills-3d" class="mobile-nav-link block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800/80">3D Lab &amp; Skills</a>
       <a href="#about" class="mobile-nav-link block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800/80">About</a>
       <a href="#contact" class="mobile-nav-link block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800/80">Contact</a>
-      <button id="mobile-admin-btn" type="button" class="w-full text-left px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800/80">Admin Portal</button>
     </div>
   </header>
 
@@ -770,10 +769,9 @@
 
       <!-- Tabs -->
       <div class="px-5 pt-4">
-        <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-900/90 border border-slate-800">
+        <div class="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-slate-900/90 border border-slate-800">
           <button type="button" data-auth-tab="login" class="auth-tab-btn py-2 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-200 border border-sky-400/50 transition">Login</button>
           <button type="button" data-auth-tab="signup" class="auth-tab-btn py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition">Sign Up</button>
-          <button type="button" data-auth-tab="admin" class="auth-tab-btn py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-amber-300 transition">Admin Login</button>
         </div>
       </div>
 
@@ -810,22 +808,7 @@
           <button type="submit" class="btn-accent w-full py-2.5 rounded-xl text-sm">Create Account</button>
         </form>
 
-        <!-- Admin Login Form -->
-        <form id="admin-login-form" class="hidden space-y-3.5">
-          <div class="px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-400/30 text-xs text-amber-200 flex items-center gap-2">
-            <i data-lucide="lock" class="w-4 h-4 shrink-0"></i>
-            <span>Restricted to authorized Mindset Arc administrator.</span>
-          </div>
-          <div>
-            <label for="admin-email" class="block text-xs font-medium text-slate-300 mb-1">Admin Email</label>
-            <input id="admin-email" type="email" required placeholder="mindsetarc490@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400" />
-          </div>
-          <div>
-            <label for="admin-password" class="block text-xs font-medium text-slate-300 mb-1">Admin Password</label>
-            <input id="admin-password" type="password" required placeholder="Enter admin password" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400" />
-          </div>
-          <button type="submit" class="w-full py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 hover:opacity-95 transition">Access Admin Dashboard</button>
-        </form>
+
       </div>
     </div>
   </div>
@@ -2274,7 +2257,6 @@
       });
       document.getElementById('login-form').classList.toggle('hidden', tabName !== 'login');
       document.getElementById('signup-form').classList.toggle('hidden', tabName !== 'signup');
-      document.getElementById('admin-login-form').classList.toggle('hidden', tabName !== 'admin');
     }
 
     function openAuthModal(tab = 'login') {
@@ -2290,13 +2272,20 @@
 
     function updateNavAuthUI() {
       const authLabel = document.getElementById('nav-auth-label');
-      const adminLabel = document.getElementById('nav-admin-label');
+      const adminBtn = document.getElementById('nav-admin-btn');
       if (currentSession) {
         authLabel.textContent = currentSession.role === 'Admin' ? 'Sign Out' : `${currentSession.name.split(' ')[0]} (Sign Out)`;
-        adminLabel.textContent = currentSession.role === 'Admin' ? 'Dashboard' : 'Admin';
+        if (currentSession.role === 'Admin') {
+          adminBtn.classList.remove('hidden');
+          adminBtn.classList.add('inline-flex');
+        } else {
+          adminBtn.classList.add('hidden');
+          adminBtn.classList.remove('inline-flex');
+        }
       } else {
         authLabel.textContent = 'Sign In';
-        adminLabel.textContent = 'Admin';
+        adminBtn.classList.add('hidden');
+        adminBtn.classList.remove('inline-flex');
       }
     }
 
@@ -2314,17 +2303,6 @@
     document.getElementById('nav-admin-btn').addEventListener('click', () => {
       if (currentSession && currentSession.role === 'Admin') {
         openAdminDashboard();
-      } else {
-        openAuthModal('admin');
-      }
-    });
-
-    document.getElementById('mobile-admin-btn').addEventListener('click', () => {
-      mobileMenu.classList.add('hidden');
-      if (currentSession && currentSession.role === 'Admin') {
-        openAdminDashboard();
-      } else {
-        openAuthModal('admin');
       }
     });
 
@@ -2364,12 +2342,28 @@
       showToast(`Welcome, ${name}! Account created.`);
     });
 
-    // User Login Handler
+    // Unified Login Handler (Auto-routes Admin to Admin Monitoring Center)
     document.getElementById('login-form').addEventListener('submit', (e) => {
       e.preventDefault();
       clearAuthError();
       const email = document.getElementById('login-email').value.trim().toLowerCase();
       const password = document.getElementById('login-password').value;
+
+      if (email === ADMIN_EMAIL) {
+        if (password === ADMIN_PASS) {
+          currentSession = { name: 'Admin', email: ADMIN_EMAIL, role: 'Admin' };
+          recordLoginEvent(email, 'Admin', 'Admin Login', 'Success');
+          updateNavAuthUI();
+          e.target.reset();
+          closeAuthModal();
+          openAdminDashboard();
+          showToast('Signed in as Admin');
+        } else {
+          recordLoginEvent(email, 'Admin', 'Admin Login', 'Failed');
+          showAuthError('Invalid email or password.');
+        }
+        return;
+      }
 
       const user = registeredUsers.find((u) => u.email === email && u.password === password);
       if (!user) {
@@ -2384,27 +2378,6 @@
       e.target.reset();
       closeAuthModal();
       showToast(`Signed in as ${user.name}`);
-    });
-
-    // Admin Login Handler
-    document.getElementById('admin-login-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      clearAuthError();
-      const email = document.getElementById('admin-email').value.trim().toLowerCase();
-      const password = document.getElementById('admin-password').value;
-
-      if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
-        currentSession = { name: 'Admin', email: ADMIN_EMAIL, role: 'Admin' };
-        recordLoginEvent(email, 'Admin', 'Admin Login', 'Success');
-        updateNavAuthUI();
-        e.target.reset();
-        closeAuthModal();
-        openAdminDashboard();
-        showToast('Admin authenticated');
-      } else {
-        recordLoginEvent(email || 'unknown', 'Admin', 'Admin Login', 'Failed');
-        showAuthError('Invalid admin credentials.');
-      }
     });
 
     // Admin Monitoring Dashboard Logic
