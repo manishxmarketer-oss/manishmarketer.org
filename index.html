@@ -275,6 +275,14 @@
       </div>
 
       <div class="flex items-center gap-2">
+        <button id="nav-auth-btn" type="button" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-medium glass text-slate-200 hover:border-sky-400/60 transition inline-flex items-center gap-1.5">
+          <i data-lucide="log-in" class="w-4 h-4 text-sky-400"></i>
+          <span id="nav-auth-label">Sign In</span>
+        </button>
+        <button id="nav-admin-btn" type="button" class="hidden sm:inline-flex px-3 py-2 rounded-xl text-xs sm:text-sm font-medium glass text-amber-300 border border-amber-400/30 hover:border-amber-400/70 transition items-center gap-1.5">
+          <i data-lucide="shield-check" class="w-4 h-4"></i>
+          <span id="nav-admin-label">Admin</span>
+        </button>
         <a href="#contact" class="hidden sm:inline-flex px-4 py-2 rounded-xl text-xs sm:text-sm btn-accent items-center gap-1.5">
           <span>Hire Me</span>
           <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
@@ -291,6 +299,7 @@
       <a href="#skills-3d" class="mobile-nav-link block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800/80">3D Lab &amp; Skills</a>
       <a href="#about" class="mobile-nav-link block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800/80">About</a>
       <a href="#contact" class="mobile-nav-link block px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800/80">Contact</a>
+      <button id="mobile-admin-btn" type="button" class="w-full text-left px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800/80">Admin Portal</button>
     </div>
   </header>
 
@@ -742,6 +751,183 @@
           </div>
         </div>
         <div id="modal-tags" class="flex flex-wrap gap-2 pt-1"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH PORTAL MODAL (LOGIN / SIGN UP / ADMIN LOGIN) -->
+  <div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+    <div class="glass-strong rounded-3xl max-w-md w-full overflow-hidden border border-slate-700/80 shadow-2xl">
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="shield" class="w-5 h-5 text-sky-400"></i>
+          <h3 class="font-display text-lg font-bold text-white">Account &amp; Admin Portal</h3>
+        </div>
+        <button id="close-auth-btn" type="button" aria-label="Close Auth Portal" class="p-2 rounded-xl hover:bg-slate-800 text-slate-300">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="px-5 pt-4">
+        <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-900/90 border border-slate-800">
+          <button type="button" data-auth-tab="login" class="auth-tab-btn py-2 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-200 border border-sky-400/50 transition">Login</button>
+          <button type="button" data-auth-tab="signup" class="auth-tab-btn py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition">Sign Up</button>
+          <button type="button" data-auth-tab="admin" class="auth-tab-btn py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-amber-300 transition">Admin Login</button>
+        </div>
+      </div>
+
+      <div class="p-5 space-y-4">
+        <div id="auth-error" class="hidden px-3.5 py-2.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-xs text-rose-200"></div>
+
+        <!-- User Login Form -->
+        <form id="login-form" class="space-y-3.5">
+          <div>
+            <label for="login-email" class="block text-xs font-medium text-slate-300 mb-1">Email Address</label>
+            <input id="login-email" type="email" required placeholder="you@example.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-400" />
+          </div>
+          <div>
+            <label for="login-password" class="block text-xs font-medium text-slate-300 mb-1">Password</label>
+            <input id="login-password" type="password" required placeholder="Enter password" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-400" />
+          </div>
+          <button type="submit" class="btn-accent w-full py-2.5 rounded-xl text-sm">Sign In</button>
+        </form>
+
+        <!-- User Sign Up Form -->
+        <form id="signup-form" class="hidden space-y-3.5">
+          <div>
+            <label for="signup-name" class="block text-xs font-medium text-slate-300 mb-1">Full Name</label>
+            <input id="signup-name" type="text" required placeholder="Alex Rivera" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-400" />
+          </div>
+          <div>
+            <label for="signup-email" class="block text-xs font-medium text-slate-300 mb-1">Email Address</label>
+            <input id="signup-email" type="email" required placeholder="you@example.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-400" />
+          </div>
+          <div>
+            <label for="signup-password" class="block text-xs font-medium text-slate-300 mb-1">Create Password</label>
+            <input id="signup-password" type="password" minlength="6" required placeholder="At least 6 characters" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-400" />
+          </div>
+          <button type="submit" class="btn-accent w-full py-2.5 rounded-xl text-sm">Create Account</button>
+        </form>
+
+        <!-- Admin Login Form -->
+        <form id="admin-login-form" class="hidden space-y-3.5">
+          <div class="px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-400/30 text-xs text-amber-200 flex items-center gap-2">
+            <i data-lucide="lock" class="w-4 h-4 shrink-0"></i>
+            <span>Restricted to authorized Mindset Arc administrator.</span>
+          </div>
+          <div>
+            <label for="admin-email" class="block text-xs font-medium text-slate-300 mb-1">Admin Email</label>
+            <input id="admin-email" type="email" required placeholder="mindsetarc490@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400" />
+          </div>
+          <div>
+            <label for="admin-password" class="block text-xs font-medium text-slate-300 mb-1">Admin Password</label>
+            <input id="admin-password" type="password" required placeholder="Enter admin password" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400" />
+          </div>
+          <button type="submit" class="w-full py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 hover:opacity-95 transition">Access Admin Dashboard</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN MONITORING DASHBOARD MODAL -->
+  <div id="admin-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
+    <div class="glass-strong rounded-3xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-amber-400/30 shadow-2xl">
+      <div class="p-5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center text-amber-300">
+            <i data-lucide="activity" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display text-lg font-bold text-white">Admin Monitoring Center</h3>
+            <p class="text-xs font-mono-code text-slate-400" id="admin-session-email">mindsetarc490@gmail.com</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="admin-logout-btn" type="button" class="px-3 py-1.5 rounded-xl text-xs font-medium bg-rose-500/15 border border-rose-500/30 text-rose-200 hover:bg-rose-500/25 transition">Sign Out</button>
+          <button id="close-admin-btn" type="button" aria-label="Close Admin Dashboard" class="p-2 rounded-xl hover:bg-slate-800 text-slate-300">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-5 flex-1">
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="glass rounded-2xl p-4">
+            <div class="text-xs text-slate-400">Total Login Events</div>
+            <div id="kpi-logins" class="font-display text-2xl font-bold text-white mt-1">0</div>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="text-xs text-slate-400">Failed Attempts</div>
+            <div id="kpi-failed" class="font-display text-2xl font-bold text-rose-400 mt-1">0</div>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="text-xs text-slate-400">Registered Users</div>
+            <div id="kpi-users" class="font-display text-2xl font-bold text-sky-400 mt-1">0</div>
+          </div>
+          <div class="glass rounded-2xl p-4">
+            <div class="text-xs text-slate-400">Hire Inquiries</div>
+            <div id="kpi-hires" class="font-display text-2xl font-bold text-emerald-400 mt-1">0</div>
+          </div>
+        </div>
+
+        <!-- Monitor Section Tabs -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="inline-flex rounded-xl bg-slate-900/90 p-1 border border-slate-800">
+            <button type="button" data-admin-tab="logins" class="admin-tab-btn px-4 py-2 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-200 border border-sky-400/40 transition">Login Details Monitor</button>
+            <button type="button" data-admin-tab="hires" class="admin-tab-btn px-4 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition">Hire Details Monitor</button>
+          </div>
+
+          <div id="login-filter-controls" class="flex items-center gap-2">
+            <select id="login-status-filter" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200 focus:outline-none">
+              <option value="all">All Events</option>
+              <option value="Success">Success Only</option>
+              <option value="Failed">Failed Only</option>
+              <option value="Admin">Admin Events</option>
+            </select>
+            <button id="clear-logs-btn" type="button" class="px-3 py-1.5 rounded-xl text-xs font-medium glass text-slate-300 hover:text-rose-300 transition">Clear Logs</button>
+          </div>
+        </div>
+
+        <!-- Login Details Table -->
+        <div id="admin-logins-panel" class="glass rounded-2xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <thead class="bg-slate-900/90 text-slate-400 font-mono-code text-[11px] uppercase">
+                <tr>
+                  <th class="px-4 py-3">Timestamp</th>
+                  <th class="px-4 py-3">Email</th>
+                  <th class="px-4 py-3">Role</th>
+                  <th class="px-4 py-3">Action</th>
+                  <th class="px-4 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody id="admin-logins-tbody" class="divide-y divide-slate-800/80 text-slate-200">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Hire Details Table -->
+        <div id="admin-hires-panel" class="hidden glass rounded-2xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <thead class="bg-slate-900/90 text-slate-400 font-mono-code text-[11px] uppercase">
+                <tr>
+                  <th class="px-4 py-3">Submitted</th>
+                  <th class="px-4 py-3">Client</th>
+                  <th class="px-4 py-3">Project Focus</th>
+                  <th class="px-4 py-3">Brief</th>
+                  <th class="px-4 py-3">Status</th>
+                  <th class="px-4 py-3">Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-hires-tbody" class="divide-y divide-slate-800/80 text-slate-200">
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2000,10 +2186,355 @@
     document.getElementById('contact-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const name = document.getElementById('sender-name').value.trim();
+      const email = document.getElementById('sender-email').value.trim();
       const scope = document.getElementById('sender-scope').value;
+      const message = document.getElementById('sender-message').value.trim();
+
+      recordHireInquiry({
+        id: 'hire_' + Date.now(),
+        timestamp: new Date().toLocaleString(),
+        name,
+        email,
+        scope,
+        message,
+        status: 'New'
+      });
+
       e.target.reset();
-      showToast(`Thanks ${name || 'there'}! Inquiry for "${scope}" prepared.`);
+      showToast(`Thanks ${name || 'there'}! Inquiry for "${scope}" submitted.`);
     });
+
+    // =========================================================================
+    // 10. AUTHENTICATION (SIGN UP / LOGIN / ADMIN LOGIN) & ADMIN MONITORING
+    // =========================================================================
+    const ADMIN_EMAIL = 'mindsetarc490@gmail.com';
+    const ADMIN_PASS = 'manish2010@?123';
+
+    let registeredUsers = [];
+    let loginLogs = [];
+    let hireInquiries = [];
+    let currentSession = null;
+
+    try {
+      registeredUsers = JSON.parse(localStorage.getItem('ma_users_v1') || '[]');
+      loginLogs = JSON.parse(localStorage.getItem('ma_login_logs_v1') || '[]');
+      hireInquiries = JSON.parse(localStorage.getItem('ma_hire_inquiries_v1') || '[]');
+      currentSession = JSON.parse(localStorage.getItem('ma_session_v1') || 'null');
+    } catch (e) {}
+
+    function persistAuthStore() {
+      try {
+        localStorage.setItem('ma_users_v1', JSON.stringify(registeredUsers));
+        localStorage.setItem('ma_login_logs_v1', JSON.stringify(loginLogs));
+        localStorage.setItem('ma_hire_inquiries_v1', JSON.stringify(hireInquiries));
+        localStorage.setItem('ma_session_v1', JSON.stringify(currentSession));
+      } catch (e) {}
+    }
+
+    function recordLoginEvent(email, role, action, status) {
+      loginLogs.unshift({
+        id: 'log_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        timestamp: new Date().toLocaleString(),
+        email,
+        role,
+        action,
+        status
+      });
+      persistAuthStore();
+      renderAdminDashboard();
+    }
+
+    function recordHireInquiry(entry) {
+      hireInquiries.unshift(entry);
+      persistAuthStore();
+      renderAdminDashboard();
+    }
+
+    const authModal = document.getElementById('auth-modal');
+    const adminModal = document.getElementById('admin-modal');
+    const authError = document.getElementById('auth-error');
+
+    function showAuthError(msg) {
+      authError.textContent = msg;
+      authError.classList.remove('hidden');
+    }
+
+    function clearAuthError() {
+      authError.classList.add('hidden');
+      authError.textContent = '';
+    }
+
+    function switchAuthTab(tabName) {
+      clearAuthError();
+      document.querySelectorAll('.auth-tab-btn').forEach((b) => {
+        const active = b.dataset.authTab === tabName;
+        b.className = active
+          ? 'auth-tab-btn py-2 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-200 border border-sky-400/50 transition'
+          : 'auth-tab-btn py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition';
+      });
+      document.getElementById('login-form').classList.toggle('hidden', tabName !== 'login');
+      document.getElementById('signup-form').classList.toggle('hidden', tabName !== 'signup');
+      document.getElementById('admin-login-form').classList.toggle('hidden', tabName !== 'admin');
+    }
+
+    function openAuthModal(tab = 'login') {
+      switchAuthTab(tab);
+      authModal.classList.remove('hidden');
+      authModal.classList.add('flex');
+    }
+
+    function closeAuthModal() {
+      authModal.classList.add('hidden');
+      authModal.classList.remove('flex');
+    }
+
+    function updateNavAuthUI() {
+      const authLabel = document.getElementById('nav-auth-label');
+      const adminLabel = document.getElementById('nav-admin-label');
+      if (currentSession) {
+        authLabel.textContent = currentSession.role === 'Admin' ? 'Sign Out' : `${currentSession.name.split(' ')[0]} (Sign Out)`;
+        adminLabel.textContent = currentSession.role === 'Admin' ? 'Dashboard' : 'Admin';
+      } else {
+        authLabel.textContent = 'Sign In';
+        adminLabel.textContent = 'Admin';
+      }
+    }
+
+    document.getElementById('nav-auth-btn').addEventListener('click', () => {
+      if (currentSession) {
+        currentSession = null;
+        persistAuthStore();
+        updateNavAuthUI();
+        showToast('Signed out');
+      } else {
+        openAuthModal('login');
+      }
+    });
+
+    document.getElementById('nav-admin-btn').addEventListener('click', () => {
+      if (currentSession && currentSession.role === 'Admin') {
+        openAdminDashboard();
+      } else {
+        openAuthModal('admin');
+      }
+    });
+
+    document.getElementById('mobile-admin-btn').addEventListener('click', () => {
+      mobileMenu.classList.add('hidden');
+      if (currentSession && currentSession.role === 'Admin') {
+        openAdminDashboard();
+      } else {
+        openAuthModal('admin');
+      }
+    });
+
+    document.getElementById('close-auth-btn').addEventListener('click', closeAuthModal);
+    authModal.addEventListener('click', (e) => {
+      if (e.target === authModal) closeAuthModal();
+    });
+
+    document.querySelectorAll('.auth-tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => switchAuthTab(btn.dataset.authTab));
+    });
+
+    // Sign Up Handler
+    document.getElementById('signup-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      clearAuthError();
+      const name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim().toLowerCase();
+      const password = document.getElementById('signup-password').value;
+
+      if (email === ADMIN_EMAIL) {
+        showAuthError('This email is reserved for Admin Login.');
+        return;
+      }
+      if (registeredUsers.some((u) => u.email === email)) {
+        showAuthError('An account with this email already exists. Please log in.');
+        return;
+      }
+
+      const newUser = { name, email, password, createdAt: new Date().toLocaleString() };
+      registeredUsers.push(newUser);
+      currentSession = { name, email, role: 'User' };
+      recordLoginEvent(email, 'User', 'Sign Up', 'Success');
+      updateNavAuthUI();
+      e.target.reset();
+      closeAuthModal();
+      showToast(`Welcome, ${name}! Account created.`);
+    });
+
+    // User Login Handler
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      clearAuthError();
+      const email = document.getElementById('login-email').value.trim().toLowerCase();
+      const password = document.getElementById('login-password').value;
+
+      const user = registeredUsers.find((u) => u.email === email && u.password === password);
+      if (!user) {
+        recordLoginEvent(email || 'unknown', 'User', 'Login', 'Failed');
+        showAuthError('Invalid email or password. Try signing up first.');
+        return;
+      }
+
+      currentSession = { name: user.name, email: user.email, role: 'User' };
+      recordLoginEvent(user.email, 'User', 'Login', 'Success');
+      updateNavAuthUI();
+      e.target.reset();
+      closeAuthModal();
+      showToast(`Signed in as ${user.name}`);
+    });
+
+    // Admin Login Handler
+    document.getElementById('admin-login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      clearAuthError();
+      const email = document.getElementById('admin-email').value.trim().toLowerCase();
+      const password = document.getElementById('admin-password').value;
+
+      if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
+        currentSession = { name: 'Admin', email: ADMIN_EMAIL, role: 'Admin' };
+        recordLoginEvent(email, 'Admin', 'Admin Login', 'Success');
+        updateNavAuthUI();
+        e.target.reset();
+        closeAuthModal();
+        openAdminDashboard();
+        showToast('Admin authenticated');
+      } else {
+        recordLoginEvent(email || 'unknown', 'Admin', 'Admin Login', 'Failed');
+        showAuthError('Invalid admin credentials.');
+      }
+    });
+
+    // Admin Monitoring Dashboard Logic
+    function openAdminDashboard() {
+      renderAdminDashboard();
+      adminModal.classList.remove('hidden');
+      adminModal.classList.add('flex');
+    }
+
+    function closeAdminDashboard() {
+      adminModal.classList.add('hidden');
+      adminModal.classList.remove('flex');
+    }
+
+    document.getElementById('close-admin-btn').addEventListener('click', closeAdminDashboard);
+    adminModal.addEventListener('click', (e) => {
+      if (e.target === adminModal) closeAdminDashboard();
+    });
+
+    document.getElementById('admin-logout-btn').addEventListener('click', () => {
+      currentSession = null;
+      persistAuthStore();
+      updateNavAuthUI();
+      closeAdminDashboard();
+      showToast('Admin signed out');
+    });
+
+    document.querySelectorAll('.admin-tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.adminTab;
+        document.querySelectorAll('.admin-tab-btn').forEach((b) => {
+          const active = b.dataset.adminTab === tab;
+          b.className = active
+            ? 'admin-tab-btn px-4 py-2 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-200 border border-sky-400/40 transition'
+            : 'admin-tab-btn px-4 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition';
+        });
+        document.getElementById('admin-logins-panel').classList.toggle('hidden', tab !== 'logins');
+        document.getElementById('admin-hires-panel').classList.toggle('hidden', tab !== 'hires');
+        document.getElementById('login-filter-controls').classList.toggle('hidden', tab !== 'logins');
+      });
+    });
+
+    document.getElementById('login-status-filter').addEventListener('change', renderAdminDashboard);
+    document.getElementById('clear-logs-btn').addEventListener('click', () => {
+      loginLogs = [];
+      persistAuthStore();
+      renderAdminDashboard();
+      showToast('Login logs cleared');
+    });
+
+    function renderAdminDashboard() {
+      document.getElementById('kpi-logins').textContent = loginLogs.length;
+      document.getElementById('kpi-failed').textContent = loginLogs.filter((l) => l.status === 'Failed').length;
+      document.getElementById('kpi-users').textContent = registeredUsers.length;
+      document.getElementById('kpi-hires').textContent = hireInquiries.length;
+
+      // Render Login Logs
+      const filterVal = document.getElementById('login-status-filter').value;
+      const filteredLogs = loginLogs.filter((l) => {
+        if (filterVal === 'all') return true;
+        if (filterVal === 'Admin') return l.role === 'Admin';
+        return l.status === filterVal;
+      });
+
+      const loginsTbody = document.getElementById('admin-logins-tbody');
+      if (filteredLogs.length === 0) {
+        loginsTbody.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-500">No login events recorded yet.</td></tr>';
+      } else {
+        loginsTbody.innerHTML = filteredLogs.map((l) => `
+          <tr class="hover:bg-slate-800/40">
+            <td class="px-4 py-3 font-mono-code text-xs text-slate-400 whitespace-nowrap">${escapeHtml(l.timestamp)}</td>
+            <td class="px-4 py-3 text-white">${escapeHtml(l.email)}</td>
+            <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-md text-[11px] font-mono-code ${l.role === 'Admin' ? 'bg-amber-500/15 text-amber-300' : 'bg-sky-500/15 text-sky-300'}">${escapeHtml(l.role)}</span></td>
+            <td class="px-4 py-3 text-slate-300">${escapeHtml(l.action)}</td>
+            <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-md text-[11px] font-mono-code ${l.status === 'Success' ? 'bg-emerald-500/15 text-emerald-300' : 'bg-rose-500/15 text-rose-300'}">${escapeHtml(l.status)}</span></td>
+          </tr>
+        `).join('');
+      }
+
+      // Render Hire Inquiries
+      const hiresTbody = document.getElementById('admin-hires-tbody');
+      if (hireInquiries.length === 0) {
+        hiresTbody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500">No hire inquiries yet. Submit the Contact form to monitor requests here.</td></tr>';
+      } else {
+        hiresTbody.innerHTML = hireInquiries.map((h) => `
+          <tr class="hover:bg-slate-800/40">
+            <td class="px-4 py-3 font-mono-code text-xs text-slate-400 whitespace-nowrap">${escapeHtml(h.timestamp)}</td>
+            <td class="px-4 py-3">
+              <div class="font-medium text-white">${escapeHtml(h.name)}</div>
+              <div class="text-xs text-slate-400 font-mono-code">${escapeHtml(h.email)}</div>
+            </td>
+            <td class="px-4 py-3 text-sky-300 text-xs">${escapeHtml(h.scope)}</td>
+            <td class="px-4 py-3 text-slate-300 max-w-xs truncate" title="${escapeHtml(h.message)}">${escapeHtml(h.message)}</td>
+            <td class="px-4 py-3">
+              <select data-hire-status="${escapeHtml(h.id)}" class="hire-status-select px-2 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200">
+                <option value="New" ${h.status === 'New' ? 'selected' : ''}>New</option>
+                <option value="Reviewed" ${h.status === 'Reviewed' ? 'selected' : ''}>Reviewed</option>
+                <option value="Replied" ${h.status === 'Replied' ? 'selected' : ''}>Replied</option>
+              </select>
+            </td>
+            <td class="px-4 py-3">
+              <button type="button" data-hire-del="${escapeHtml(h.id)}" class="hire-del-btn text-xs text-rose-400 hover:text-rose-300 transition">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+
+        document.querySelectorAll('.hire-status-select').forEach((sel) => {
+          sel.addEventListener('change', (e) => {
+            const item = hireInquiries.find((x) => x.id === e.target.dataset.hireStatus);
+            if (item) {
+              item.status = e.target.value;
+              persistAuthStore();
+              showToast(`Inquiry marked as ${item.status}`);
+            }
+          });
+        });
+
+        document.querySelectorAll('.hire-del-btn').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const id = e.target.dataset.hireDel;
+            hireInquiries = hireInquiries.filter((x) => x.id !== id);
+            persistAuthStore();
+            renderAdminDashboard();
+            showToast('Inquiry removed');
+          });
+        });
+      }
+    }
+
+    updateNavAuthUI();
   </script>
 </body>
 </html>
