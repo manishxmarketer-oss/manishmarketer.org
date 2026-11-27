@@ -234,10 +234,6 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <button id="open-customizer-btn" type="button" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-medium text-slate-200 border border-slate-700/70 hover:border-sky-400/60 hover:bg-slate-800/70 transition flex items-center gap-1.5">
-          <i data-lucide="sliders-horizontal" class="w-4 h-4 text-sky-400"></i>
-          <span>Customize</span>
-        </button>
         <a href="#contact" class="hidden sm:inline-flex px-4 py-2 rounded-xl text-xs sm:text-sm btn-accent items-center gap-1.5">
           <span>Hire Me</span>
           <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
@@ -629,55 +625,6 @@
     </div>
   </div>
 
-  <!-- CUSTOMIZE PORTFOLIO DRAWER -->
-  <div id="customizer-drawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md glass-strong border-l border-slate-700/80 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
-    <div class="p-5 border-b border-slate-800 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <i data-lucide="sliders-horizontal" class="w-5 h-5 text-sky-400"></i>
-        <h3 class="font-display text-lg font-bold text-white">Customize Portfolio</h3>
-      </div>
-      <button id="close-customizer-btn" type="button" aria-label="Close Customizer" class="p-2 rounded-xl hover:bg-slate-800 text-slate-300">
-        <i data-lucide="x" class="w-5 h-5"></i>
-      </button>
-    </div>
-
-    <div class="p-5 space-y-4 overflow-y-auto flex-1">
-      <p class="text-xs text-slate-400 leading-relaxed">
-        Personalize your portfolio identity live. Changes save automatically in your browser and update the page immediately.
-      </p>
-
-      <div>
-        <label for="edit-name" class="block text-xs font-medium text-slate-300 mb-1">Display Name</label>
-        <input id="edit-name" type="text" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-400" />
-      </div>
-
-      <div>
-        <label for="edit-badge" class="block text-xs font-medium text-slate-300 mb-1">Availability Badge</label>
-        <input id="edit-badge" type="text" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-400" />
-      </div>
-
-      <div>
-        <label for="edit-bio" class="block text-xs font-medium text-slate-300 mb-1">Short Bio</label>
-        <textarea id="edit-bio" rows="3" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-400"></textarea>
-      </div>
-
-      <div>
-        <label for="edit-email" class="block text-xs font-medium text-slate-300 mb-1">Contact Email</label>
-        <input id="edit-email" type="email" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-400" />
-      </div>
-
-      <div>
-        <label for="edit-location" class="block text-xs font-medium text-slate-300 mb-1">Location</label>
-        <input id="edit-location" type="text" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:outline-none focus:border-sky-400" />
-      </div>
-    </div>
-
-    <div class="p-5 border-t border-slate-800 flex items-center gap-3">
-      <button id="reset-profile-btn" type="button" class="px-4 py-2.5 rounded-xl text-xs font-medium glass text-slate-300 hover:text-white transition">Reset</button>
-      <button id="save-profile-btn" type="button" class="flex-1 btn-accent px-4 py-2.5 rounded-xl text-xs font-semibold">Apply &amp; Save</button>
-    </div>
-  </div>
-
   <!-- TOAST NOTIFICATION -->
   <div id="toast" class="fixed bottom-6 right-6 z-50 glass-strong px-4 py-3 rounded-xl border border-sky-400/40 text-sm text-white shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2.5 pointer-events-none">
     <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
@@ -842,48 +789,6 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
     }
-
-    const drawer = document.getElementById('customizer-drawer');
-    document.getElementById('open-customizer-btn').addEventListener('click', () => {
-      document.getElementById('edit-name').value = profile.name;
-      document.getElementById('edit-badge').value = profile.badge;
-      document.getElementById('edit-bio').value = profile.bio;
-      document.getElementById('edit-email').value = profile.email;
-      document.getElementById('edit-location').value = profile.location;
-      drawer.classList.remove('translate-x-full');
-    });
-
-    document.getElementById('close-customizer-btn').addEventListener('click', () => {
-      drawer.classList.add('translate-x-full');
-    });
-
-    document.getElementById('save-profile-btn').addEventListener('click', () => {
-      profile.name = document.getElementById('edit-name').value.trim() || DEFAULT_PROFILE.name;
-      profile.badge = document.getElementById('edit-badge').value.trim() || DEFAULT_PROFILE.badge;
-      profile.bio = document.getElementById('edit-bio').value.trim() || DEFAULT_PROFILE.bio;
-      profile.email = document.getElementById('edit-email').value.trim() || DEFAULT_PROFILE.email;
-      profile.location = document.getElementById('edit-location').value.trim() || DEFAULT_PROFILE.location;
-      try {
-        localStorage.setItem('portfolio_3d_profile_v1', JSON.stringify(profile));
-      } catch (e) {}
-      applyProfile();
-      drawer.classList.add('translate-x-full');
-      showToast('Portfolio details updated');
-    });
-
-    document.getElementById('reset-profile-btn').addEventListener('click', () => {
-      profile = { ...DEFAULT_PROFILE };
-      try {
-        localStorage.removeItem('portfolio_3d_profile_v1');
-      } catch (e) {}
-      document.getElementById('edit-name').value = profile.name;
-      document.getElementById('edit-badge').value = profile.badge;
-      document.getElementById('edit-bio').value = profile.bio;
-      document.getElementById('edit-email').value = profile.email;
-      document.getElementById('edit-location').value = profile.location;
-      applyProfile();
-      showToast('Reset to defaults');
-    });
 
     applyProfile();
 
